@@ -1,0 +1,50 @@
+*{ 
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+  overflow-x: hidden;
+  background: black !important;
+  color: white !important;
+}
+
+main{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 50px;
+}
+
+#output{
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  padding: 20px;
+}
+
+#output h4{
+  margin-bottom: 20px;
+}
+
+form{
+  width: 100%;
+}
+
+form h1{
+  margin-bottom: 40px;
+}
+
+.input_group{
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+  padding: 20px;
+  width: 100%;
+}
