@@ -1,9 +1,8 @@
 # simple-csv-processor
 
-[![npm Version](https://img.shields.io/badge/simple--csv--processor-v1.0.0-green)](https://npmjs.org/package/csv-reader)
-<img alt="badge" src="https://img.shields.io/badge/-simple-csv-processor-00758F?style=flat-square&logo=MySQL&logoColor=white" />
+[![npm Version](https://img.shields.io/badge/simple--csv--processor-v1.0.0-green)](https://npmjs.org/package/simple-csv-processor)
 
-A CSV stream reader, with many many features, and ability to work with the largest datasets
+A CSV file reader, with many features, and ability to work with large datasets.
 
 ## Included features: (can be turned on and off)
 
