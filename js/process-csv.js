@@ -1,26 +1,34 @@
+/**
+ * @param {Object?} options
+ * @param {string} [options.delimiter=','] - Specify what is the CSV delimeter.
+ * @param {boolean} [options.skipEmptyLines=false] - Should empty lines be automatically skipped?
+ * @param {boolean} [options.parseNumbers=false] - Automatically parse numbers (with a . as the decimal separator).
+ * @param {boolean} [options.parseBooleans=false] - Automatically parse booleans (strictly lowercase `true` and `false`).
+ * @param {boolean} [options.ltrim=false] - Automatically trim first column.
+ * @param {boolean} [options.rtrim=false] - Automatically trim last column.
+ * @param {boolean} [options.trim=false] - If true, then both 'ltrim' and 'rtrim' are set to true.
+ * @param {boolean} [options.skipHeader=false] - If true, then skip the first header row.
+ * @param {boolean} [options.rowAsObject=false] - If true, each row will be converted automatically to an object based
+ *                                             on the header. This implied `skipHeader=true`.
+ * @param {boolean} [options.errorLog=false] - If true, errors will be logged to the console whether the `error` event is used or not.
+ * @returns {ProcessCSV}
+ * @constructor
+ */
 var ProcessCSV = function (options) {
 
 	let _this = this;
 	let pause = false;
 	let opts = {
-		// The character that separates between cells
 		delimiter: options.delimiter || ',',
-		// Should empty lines be automatically skipped?
 		skipEmptyLines: options.skipEmptyLines || false,
-		// Should the first header row be skipped?
-		skipHeader: options.skipHeader || false,
-		// If true, each row will be converted automatically to an object based on the header. This implied skipHeader=true.
-		rowAsObject: options.rowAsObject || false,
-		// Should numbers be automatically parsed? This will parse any format supported by parseFloat including scientific notation, Infinity and NaN.
 		parseNumbers: options.parseNumbers || false,
-		// Automatically parse booleans (strictly lowercase true and false)
 		parseBooleans: options.parseBooleans || false,
-		// Automatically left-trims columns
 		ltrim: options.ltrim || false,
-		// Automatically right-trims columns
 		rtrim: options.rtrim || false,
-		// If true, then both 'ltrim' and 'rtrim' are set to true
 		trim: options.trim || false,
+		skipHeader: options.skipHeader || false,
+		rowAsObject: options.rowAsObject || false,
+		errorLog: options.errorLog || false,
 	};
 
 	if (opts.trim) opts.ltrim = opts.rtrim = true;
@@ -31,6 +39,8 @@ var ProcessCSV = function (options) {
 	let allDataLines = [];
 	// Contains the header of the csv file
 	let dataHeader = [];
+	// Errors array
+	let errors = [];
 
 	/**
 	 * @desc Reads the file as a text
@@ -65,13 +75,19 @@ var ProcessCSV = function (options) {
 
 		if (!allDataLines || !allDataLines[0]) {
 			logError('w', 'No data to process, file is empty!');
+			dispatch('error', new Error('No data to process, file is empty!'));
+
+			return _this;
 		} else {
-			if (opts.rowAsObject)
+			if (!opts.skipHeader) {
 				dataHeader = allDataLines[0].split(opts.delimiter);
+				if (!opts.rowAsObject)
+					dispatch('header', dataHeader);
+			}
 
 			await formatDataRows();
 
-			_this.dispatch('finish', 'File has been processed!');
+			dispatch('finish', null);
 		}
 	};
 
@@ -94,14 +110,14 @@ var ProcessCSV = function (options) {
 			if (opts.ltrim) row[0] = row[0].trim()
 			if (opts.rtrim) row[row.length - 1] = row[row.length - 1].trim();
 
-			if (opts.parseNumbers && row[0] != '') row = parseRowNumbers(row);
-			if (opts.parseBooleans && row[0] != '') row = parseRowBooleans(row);
+			if (opts.parseNumbers && row[0] !== '') row = parseRowNumbers(row);
+			if (opts.parseBooleans && row[0] !== '') row = parseRowBooleans(row);
 
 			// dispatch row event
 			if (opts.rowAsObject && row[0] !== '')
-				_this.dispatch('row', createRowObject(row));
+				dispatch('row', createRowObject(row));
 			else if (!opts.rowAsObject)
-				_this.dispatch('row', row);
+				dispatch('row', row);
 		}
 
 		return _this;
@@ -113,13 +129,15 @@ var ProcessCSV = function (options) {
 	 * @returns {Array}
 	 */
 	const parseRowBooleans = function (row) {
-		for (let x = 0; x < row.length; x++) {
-			const col = row[x];
-			if (col === 'true' || col === 'false')
-				row[x] = col === 'true';
-		}
+		return row.map(col => {
+			if (typeof col === 'string') {
+				let c = col.toLowerCase();
+				if (c === 'true' || c === 'false')
+					return c === 'true';
+			}
 
-		return row;
+			return col
+		});
 	}
 
 	/**
@@ -128,13 +146,12 @@ var ProcessCSV = function (options) {
 	 * @returns {Array}
 	 */
 	const parseRowNumbers = function (row) {
-		for (let x = 0; x < row.length; x++) {
-			const col = row[x];
+		return row.map(col => {
 			if (parseFloat(col) || col === '0')
-				row[x] = parseFloat(col);
-		}
+				return parseFloat(col);
 
-		return row;
+			return col;
+		});
 	}
 
 	/**
@@ -157,8 +174,10 @@ var ProcessCSV = function (options) {
 	 */
 	const errorHandler = function (event) {
 		if (event.target.error.name == "NotReadableError") {
-			alert("Cannot read file, this file might be corrupted.");
-			logError('e', 'Cannot read file, this file might be corrupted.');
+			logError('e', 'Cannot read file!');
+			dispatch('error', new Error('Cannot read file!'));
+
+			return _this;
 		}
 	};
 
@@ -168,6 +187,8 @@ var ProcessCSV = function (options) {
 	 * @param {String} message 
 	 */
 	const logError = function (type, message) {
+		if (!errorLog) return;
+
 		type === "e" ? console.error(message) : console.warn(message);
 	}
 
@@ -179,25 +200,14 @@ var ProcessCSV = function (options) {
 		if (file)
 			if (window.FileReader) {
 				readAsText(file);
+
 				return _this;
 			} else {
-				alert('FileReader are not supported in this browser, please switch to a different browser.');
 				logError('e', 'FileReader are not supported in this browser, please switch to a different browser.');
-			}
-	};
+				dispatch('error', new Error('FileReader are not supported in this browser, please switch to a different browser.'));
 
-	/**
-	 * @desc Sets the delimiter for the splitted data lines
-	 * @param {Object} delimiter - { byComma: true, bySpace: false, bySpaceOrComma: false }
-	 */
-	this.setDelimiter = function (delimiter = {
-		byComma: true,
-		bySpace: false,
-		bySpaceOrComma: false,
-	}) {
-		opts.delimiter.byComma = delimiter.byComma;
-		opts.delimiter.bySpace = delimiter.bySpace;
-		opts.delimiter.bySpaceOrComma = delimiter.bySpaceOrComma;
+				return _this;
+			}
 	};
 
 	/**
@@ -226,12 +236,21 @@ var ProcessCSV = function (options) {
 	 * @desc Resume when you are ready to receive and process more rows.
 	 */
 	this.resume = function () {
-		this.dispatch('resume-row', 'Receiving more rows...');
+		dispatch('resume-row', 'Receiving more rows...');
 	};
 
-	// To dispatch and listen to a custom event you can use these methods
 	/**
-	 * @desc Listen to a dispatched custom event
+	 * @desc Dispatch a custom event
+	 * @param {String} name - event name
+	 * @param {*} event - contains the data passed to the event
+	 */
+	const dispatch = function (name, event) {
+		let callbacks = _this[name];
+		if (callbacks) callbacks.forEach(callback => callback(event));
+	};
+
+	/**
+	 * @desc Listen to a specific event
 	 * @param {String} name - event name
 	 * @param {Function} callback - callback function
 	 */
@@ -243,13 +262,4 @@ var ProcessCSV = function (options) {
 		return this;
 	};
 
-	/**
-	 * @desc Dispatch a custom event
-	 * @param {String} name - event name
-	 * @param {*} event - contains the data passed to the event
-	 */
-	this.dispatch = function (name, event) {
-		let callbacks = this[name];
-		if (callbacks) callbacks.forEach(callback => callback(event));
-	};
 };

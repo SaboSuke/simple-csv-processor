@@ -1,77 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProcessCSV</title>
-  <link rel="stylesheet" href="./css/style.css">
-</head>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcessCSV</title>
+    <link rel="stylesheet" href="./css/style.css">
+  </head>
 
-<body>
-  <main>
-    <form>
-      <center style="margin-bottom:10px;">
-        <h1>ProcessCSV</h1>
-      </center>
-      <div class="input_group">
-        <label for="csv-input">
-          <strong>Your CSV File:</strong>
-        </label>
-        <input type="file" id="csv-input" accept=".csv">
+  <body>
+    <main>
+      <form>
+        <center style="margin-bottom:10px;">
+          <h1>ProcessCSV</h1>
+        </center>
+        <div class="input_group">
+          <label for="csv-input">
+            <strong>Your CSV File:</strong>
+          </label>
+          <input type="file" id="csv-input" accept=".csv">
+        </div>
+      </form>
+      <div id="output">
+        <h4>Output here:</h4>
+        <p></p>
       </div>
-    </form>
-    <div id="output">
-      <h4>Output here:</h4>
-      <p></p>
-    </div>
-  </main>
+    </main>
 
-  <script type="text/javascript" src="js/process-csv.js"></script>
-  <script>
+    <script type="text/javascript" src="js/process-csv.js"></script>
+    <script>
+      let holder = document.querySelector('#output p');
+      document.querySelector('#csv-input').addEventListener('change', processCSVFile);
 
-    // ProcessCSV instance and options here
-    let process = new ProcessCSV({
-      delimiter: ',',
-      skipEmptyLines: true,
-      skipHeader: false,
-      rowAsObject: false,
-      parseNumbers: true,
-      parseBooleans: true,
-      // ltrim: true,
-      // rtrim: false,
-      trim: true,
-    });
-    let holder = document.querySelector('#output p');
+      function processCSVFile(e) {
+        holder.innerHTML = '';
+        let file = e.target.files[0];
 
-    document.querySelector('#csv-input').addEventListener('change', (e) => {
+        // ProcessCSV instance and options here
+        let process = new ProcessCSV({
+          delimiter: ',',
+          skipEmptyLines: true,
+          skipHeader: false,
+          rowAsObject: false,
+          parseNumbers: true,
+          parseBooleans: true,
+          trim: true,
+        }).processFile(file)
+          .on('header', header => {
+            console.log("header: ", header);
+          })
+          .on('row', rowData => {
+            holder.innerHTML += rowData + '<br>';
+            // you can pause receiving more rows if you need time to process the current one.
+            process.pause();
+            setTimeout(() => {
+              // then you can resume like this
+              process.resume();
+            }, 100);
+          })
+          .on('finish', () => {
+            console.log("No more rows to process!")
+          })
+          .on('error', error => {
+            console.error(error)
+          });
+      }
 
-      holder.innerHTML = '';
-      let file = e.target.files[0];
-
-      // Start processing the file
-      process.processFile(file)
-        // get each row once it gets proccessed
-        .on('row', rowData => {
-          console.log("row: ", rowData)
-          holder.innerHTML += rowData + '<br>';
-
-          // you can pause receiving more rows if you need time to process the current one.
-          process.pause();
-          setTimeout(() => {
-            // then you can resume like this
-            process.resume();
-          }, 1000);
-        })
-        // triggered once all rows have been processed.
-        .on('finish', data => {
-          console.log("No more rows to process!")
-        });
-
-    });
-
-  </script>
-</body>
+    </script>
+  </body>
 
 </html>
