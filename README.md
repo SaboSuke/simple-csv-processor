@@ -4,7 +4,7 @@
 
 A CSV file reader, with many features, and ability to work with large datasets.
 
-## Included features: (can be turned on and off)
+## Features:
 
 * Choosing a different delimiter instead of the comma
 * Automatic skipping empty lines
@@ -17,10 +17,10 @@ A CSV file reader, with many features, and ability to work with large datasets.
 ## Installation:
 
 ```
-npm install --save simple-csv-processor
+npm install simple-csv-processor
 ```
 
-The options you can pass are:
+## Options
 
 Name | Type | Default | Explanation
 ---- | ---- | ------- | -----------
@@ -87,19 +87,16 @@ If anyone wishes to contribute unit tests that also would be great.
 
 ## License
 
-All the code here is under MIT license. Which means you could do virtually anything with the code.
-I will appreciate it very much if you keep an attribution where appropriate.
+The MIT License (MIT)
 
-    The MIT License (MIT)
+Copyright (c) 2021 Essam Abed (abedissam95@gmail.com)
 
-    Copyright (c) 2021 Essam Abed (abedissam95@gmail.com)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
