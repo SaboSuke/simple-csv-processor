@@ -29,7 +29,7 @@ Name | Type | Default | Explanation
   `skipHeader` | `Boolean` | `false` | Should the first header row be skipped?
   `rowAsObject` | `Boolean` | `false` | If true, each row will be converted automatically to an object based on the header. This implied `skipHeader=true`.
   `parseNumbers` | `Boolean` | `false` | Should numbers be automatically parsed? This will parse any format supported by `parseFloat`.
-  `parseBooleans` | `Boolean` | `false` | Automatically parse booleans (strictly lowercase `true` and `false`).
+  `parseBooleans` | `Boolean` | `false` | Automatically parse booleans (Auto conversion to lowercase `true` and `false`).
   `ltrim` | `Boolean` | `false` | Automatically left-trims columns.
   `rtrim` | `Boolean` | `false` | Automatically right-trims columns.
   `trim` | `Boolean` | `false` | If true, then both 'ltrim' and 'rtrim' are set to true.

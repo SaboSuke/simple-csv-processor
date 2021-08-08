@@ -5,8 +5,8 @@
 
 body{
   overflow-x: hidden;
-  background: black !important;
-  color: white !important;
+  /* background: black !important;
+  color: white !important; */
 }
 
 main{
@@ -25,7 +25,7 @@ main{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 3px;
   padding: 20px;
 }
@@ -43,8 +43,19 @@ form h1{
 }
 
 .input_group{
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 3px;
   padding: 20px;
   width: 100%;
+}
+
+table{
+  border: 1px solid black;
+  text-align: center;
+  margin: 0;
+}
+
+table td, table th{
+  padding: 5px;
+  border: 1px solid black;
 }
