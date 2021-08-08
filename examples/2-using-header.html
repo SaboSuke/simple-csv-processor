@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>using header</title>
+        <link rel="stylesheet" href="../css/style.css">
+    </head>
+
+    <body>
+        <main>
+            <form>
+                <center style="margin-bottom:10px;">
+                    <h1>ProcessCSV</h1>
+                </center>
+                <div class="input_group">
+                    <label for="csv-input">
+                        <strong>Your CSV File:</strong>
+                    </label>
+                    <input type="file" id="csv-input" accept=".csv">
+                </div>
+            </form>
+            <div id="output">
+                <h4>Output will appear here:</h4>
+                <table>
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </main>
+
+        <script src="../process-csv.js"></script>
+        <script>
+            document.querySelector('#csv-input').addEventListener('change', processCSVFile);
+
+            var tablearea = document.getElementById('output'),
+                table = document.querySelector('table'),
+                header = document.querySelector('table thead'),
+                body = document.querySelector('table tbody');
+
+            function addRow(row, isHeader) {
+                var tr = document.createElement('tr');
+                for (var i = 0; i < row.length; i++) {
+
+                    let td;
+                    if (isHeader) {
+                        td = document.createElement('th');
+                    } else {
+                        td = document.createElement('td');
+                    }
+
+                    td.appendChild(document.createTextNode(row[i]));
+                    tr.appendChild(td);
+
+                    if (isHeader)
+                        header.appendChild(tr);
+                    else
+                        body.appendChild(tr);
+                }
+            }
+
+            function processCSVFile(e) {
+                header.innerHTML = '';
+                body.innerHTML = '';
+                let file = e.target.files[0];
+
+                let process = new ProcessCSV({
+                    delimiter: '    ', //tab
+                    skipEmptyLines: true,
+                    skipHeader: false,
+                    parseBooleans: true,
+                    parseNumbers: true,
+                    trim: true,
+                }).processFile(file)
+                    .on('header', header => {
+                        addRow(header, true);
+                    })
+                    .on('row', rowData => {
+                        addRow(rowData, false);
+
+                        // you can pause receiving more rows if you need time to process the current one.
+                        process.pause();
+                        setTimeout(() => {
+                            // then you can resume like this
+                            process.resume();
+                        }, 100);
+                    })
+                    .on('finish', () => {
+                        console.log("No more rows to process!")
+                    })
+                    .on('error', error => {
+                        console.error(error)
+                    });
+            }
+
+        </script>
+    </body>
+
+</html>
