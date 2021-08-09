@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>auto parse</title>
+        <title>Large dataset example</title>
         <link rel="stylesheet" href="../css/style.css">
     </head>
 
@@ -23,35 +23,58 @@
             </form>
             <div id="output">
                 <h4>Output will appear here:</h4>
-                <p></p>
+                <table>
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </main>
 
+        <script src="./example.js"></script>
         <script src="../process-csv.js"></script>
         <script>
-            let holder = document.querySelector('#output p');
+            // use the `5-large-dataset.csv` file to test this
             document.querySelector('#csv-input').addEventListener('change', processCSVFile);
 
             function processCSVFile(e) {
-                holder.innerHTML = '';
+                header.innerHTML = '';
+                body.innerHTML = '';
                 let file = e.target.files[0];
 
                 let process = new ProcessCSV({
+                    // seperator
                     delimiter: ',',
+                    // skippers
+                    skipLines: 0,
                     skipEmptyLines: true,
-                    skipHeader: true,
-                    parseNumbers: true,
+                    skipComments: "#",
+                    // conversion
                     parseBooleans: true,
+                    parseNumbers: true,
+                    // quote handler
+                    allowSpecialQuotes: true,
+                    quote: '"',
+                    // more options
                     trim: true,
-                }).processFile(file)
-                    .on('row', rowData => {
-                        holder.innerHTML += rowData + '<br>';
-                        // you can pause receiving more rows if you need time to process the current one.
+                    strict: false,
+                    maxRowBytes: 8e+16, // 10 peta byte
+                }).process(file)
+                    .on('header', header => {
+                        addRow(header, true);
+                    })
+                    .on('row', row => {
+                        /**
+                         * if the file has a very large dataset it's important to
+                         * use `process.pause()` & `process.resume()` otherwise everything is fine
+                         */
                         process.pause();
-                        setTimeout(() => {
-                            // then you can resume like this
+
+                        addRow(row, false);
+                        // You can end the process like this
+                        if (false)
+                            process.end();
+                        else
                             process.resume();
-                        }, 100);
                     })
                     .on('finish', () => {
                         console.log("No more rows to process!")

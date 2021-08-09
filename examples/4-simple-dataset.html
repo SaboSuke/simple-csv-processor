@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Simple dataset example</title>
+        <link rel="stylesheet" href="../css/style.css">
+    </head>
+
+    <body>
+        <main>
+            <form>
+                <center style="margin-bottom:10px;">
+                    <h1>ProcessCSV</h1>
+                </center>
+                <div class="input_group">
+                    <label for="csv-input">
+                        <strong>Your CSV File:</strong>
+                    </label>
+                    <input type="file" id="csv-input" accept=".csv">
+                </div>
+            </form>
+            <div id="output">
+                <h4>Output will appear here:</h4>
+                <table>
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </main>
+
+        <script src="./example.js"></script>
+        <script src="../process-csv.js"></script>
+        <script>
+            // use the `4-simple-dataset.csv` file to test this
+            document.querySelector('#csv-input').addEventListener('change', processCSVFile);
+
+            function processCSVFile(e) {
+                header.innerHTML = '';
+                body.innerHTML = '';
+                let file = e.target.files[0];
+
+                let process = new ProcessCSV({
+                    // seperator
+                    delimiter: ',',
+                    // skippers
+                    skipEmptyLines: true,
+                    // conversion
+                    parseBooleans: true,
+                    parseNumbers: true,
+                    // more options
+                    trim: true,
+                    strict: true,
+                }).process(file)
+                    .on('header', header => {
+                        addRow(header, true);
+                    })
+                    .on('row', row => {
+                        addRow(row, false);
+                    })
+                    .on('finish', () => {
+                        console.log("No more rows to process!")
+                    })
+                    .on('error', error => {
+                        console.error(error)
+                    });
+            }
+
+        </script>
+    </body>
+
+</html>
