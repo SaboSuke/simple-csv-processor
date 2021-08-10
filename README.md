@@ -17,9 +17,15 @@ A CSV file reader, with many features, and ability to work with large datasets.
 
 ## Installation:
 
-```
+```npm
 npm install simple-csv-processor
 ```
+
+## CDN
+
+````javascript
+<script src="https://cdn.jsdelivr.net/npm/simple-csv-processor@1.0.1/process-csv.js"></script>
+````
 
 ## Options
 
