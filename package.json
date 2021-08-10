@@ -1,6 +1,6 @@
 {
   "name": "simple-csv-processor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CSV file reader, with many features, and ability to work with large datasets.",
   "main": "process-csv.js",
   "directories": {
