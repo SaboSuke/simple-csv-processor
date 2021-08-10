@@ -1,6 +1,6 @@
 # simple-csv-processor
 
-[![npm Version](https://img.shields.io/badge/simple--csv--processor-v1.0.0-green)](https://npmjs.org/package/simple-csv-processor)
+[![npm Version](https://img.shields.io/badge/simple--csv--processor-v1.0.1-green)](https://npmjs.org/package/simple-csv-processor)
 
 A CSV file reader, with many features, and ability to work with large datasets.
 
