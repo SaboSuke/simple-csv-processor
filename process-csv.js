@@ -188,7 +188,7 @@ const ProcessCSV = function (options) {
 			if (cell[0] == opts.quote && cell[cell.length - 1] !== opts.quote) {
 				result.push(cell.slice(1));
 				status = 1;
-			} else if (cell[0] !== opts.quotecell && [cell.length - 1] == opts.quote) {
+			} else if (cell[0] !== opts.quote && [cell.length - 1] == opts.quote) {
 				result[(result.length - 1)] += " " + (cell.slice(0, -1));
 				status = 0;
 			} else if (status == 1) {
@@ -214,8 +214,6 @@ const ProcessCSV = function (options) {
 			skip = opts.skipLines > (index - 1);
 
 		if (skip && opts.strict && row.length !== dataHeader.length) {
-			console.log("header length:", dataHeader.length)
-			console.log("row length:", row.length)
 			logError('e', `Row length does not match headers(in file row number ${index}).`);
 			dispatch('error', throwError(`Row length does not match headers(in file row number ${index}).`));
 			return true;
