@@ -34,7 +34,7 @@ Name | Type | Default | Explanation
   `delimiter` | `String` | `,` | The character that separates between cells.
   `allowSpecialQuotes` | `Boolean` | `true` | Should quotes be treated as a special character that wraps cells.
   `quote` | `String` | `"` | If `allowSpecialQuotes` is true, this will specify the quote character. 
-  `skipComments` | `Boolean | String` | `false` | If true, lines which begin with # will be skipped. To use a custom character passe it as a sring.
+  `skipComments` | `Boolean` | `String` | `false` | If true, lines which begin with # will be skipped. To use a custom character passe it as a sring.
   `skipLines` | `Number` | `0` | Specifies the number of lines at the beginning of the file to skip over.
   `skipEmptyLines` | `Boolean` | `false` | Should empty lines be automatically skipped?
   `parseNumbers` | `Boolean` | `false` | Should numbers be automatically parsed? This will parse any format supported by `parseFloat`.
